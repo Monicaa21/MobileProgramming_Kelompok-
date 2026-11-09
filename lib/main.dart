@@ -11,111 +11,140 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Toko E-Commerce',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+        useMaterial3: true, colorSchemeSeed: Colors.red),
+      home: const HomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
+// struktur data produk
+class Product {
+  final String name;
+  final int price;
+  const Product(this.name, this.price);
 }
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+ 
+// daftar produknya 
+// <Product> itu objectnya
+const List<Product> allProducts = [
+  Product('Buku tulis', 12900),
+  Product('Tas Wanita', 269000),
+  Product('Tas Ransel Laptop', 275000),
+  Product('Headphone Bluetooth', 299000),
+  Product('Stanley Tumblr', 850000),
+  Product('Kaos SpiderMan', 59000),
+];
+ 
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+ 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+ 
+class _HomePageState extends State<HomePage> {
+  final TextEditingController _searchController = TextEditingController();
+  String _query = '';
+  int _cartCount = 0;
+ 
+  // buat bersihin resource kalau misal halamannya udh ga di homepage
+  @override
+  void dispose() {
+    // kalo udh dihalaman yang bukan homepage, searchControllernya dibersihin
+    _searchController.dispose();
+    super.dispose();
   }
-
+ 
+  // cari produk berdasarkan pencarian
+  List<Product> get _filteredProducts => allProducts
+      .where((p) => p.name.toLowerCase().contains(_query.toLowerCase()))
+      .toList();
+ 
+  // produk mengambil daftar produk yang sudah difilter.
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    final products = _filteredProducts;
+ 
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+        titleSpacing: 16,
+        title: _buildSearchBar(),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: IconButton(
+              tooltip: 'Keranjang',
+              icon: Badge(
+                isLabelVisible: _cartCount > 0,
+                label: Text('$_cartCount'),
+                child: const Icon(Icons.shopping_cart_outlined),
+              ),
+              onPressed: () {
+                // TODO: navigasi ke halaman keranjang
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+
+      // tampilin produk di halamannya
+      // periksa apakah produk masih ada
+      body: products.isEmpty
+          ? const Center(child: Text('Produk tidak ditemukan'))
+          // kalau produknya ada, tampilin
+          : ListView.separated(
+              padding: const EdgeInsets.all(16),
+              // jika terdapat 6 produk, maka itemCount bernilai 6.
+              itemCount: products.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              // Menentukan tampilan setiap produk
+              itemBuilder: (context, i) {
+                final p = products[i];
+                // struktur card produknya
+                return Card(
+                  child: ListTile(
+                    title: Text(p.name),
+                    subtitle: Text('Rp ${p.price}'),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.add_shopping_cart),
+                      onPressed: () => setState(() => _cartCount++),
+                    ),
+                  ),
+                );
+              },
+            ),
+    );
+  }
+ 
+  Widget _buildSearchBar() {
+    return SizedBox(
+      height: 40,
+      child: TextField(
+        controller: _searchController,
+        onChanged: (value) => setState(() => _query = value),
+        textInputAction: TextInputAction.search,
+        decoration: InputDecoration(
+          hintText: 'Cari produk...',
+          prefixIcon: const Icon(Icons.search),
+          suffixIcon: _query.isEmpty
+              ? null
+              : IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() => _query = '');
+                  },
+                ),
+          filled: true,
+          contentPadding: EdgeInsets.zero,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+        ),
       ),
     );
   }
