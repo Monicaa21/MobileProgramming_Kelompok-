@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'utils/navigation_menu.dart';
+import 'package:aplikasi_tokped/features/navigation/presentation/pages/navigation_menu.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Online Shop',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -30,10 +30,13 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromARGB(255, 15, 108, 63),
+        ),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 238, 239, 238),
       ),
       home: const NavigationMenu(),
     );
   }
 }
-

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class BottomNavbar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onDestinationSelected;
@@ -9,7 +8,7 @@ class BottomNavbar extends StatelessWidget {
     super.key,
     required this.selectedIndex,
     required this.onDestinationSelected,
-    });
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,27 +21,27 @@ class BottomNavbar extends StatelessWidget {
 
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
 
-      destinations: const[
+      destinations: const [
         NavigationDestination(
           icon: Icon(Icons.home_outlined),
-          selectedIcon: Icon(Icons.home), 
+          selectedIcon: Icon(Icons.home),
           label: 'Home',
-          ),
+        ),
         NavigationDestination(
           icon: Icon(Icons.video_collection_outlined),
-          selectedIcon: Icon(Icons.video_collection), 
+          selectedIcon: Icon(Icons.video_collection),
           label: 'Feed',
-          ),
+        ),
         NavigationDestination(
           icon: Icon(Icons.notifications_none_outlined),
-          selectedIcon: Icon(Icons.notifications_none), 
+          selectedIcon: Icon(Icons.notifications),
           label: 'Notification',
-          ),  
+        ),
         NavigationDestination(
           icon: Icon(Icons.person_outline),
-          selectedIcon: Icon(Icons.person), 
+          selectedIcon: Icon(Icons.person),
           label: 'Profile',
-          ),
+        ),
       ],
     );
   }
